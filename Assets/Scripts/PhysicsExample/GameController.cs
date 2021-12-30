@@ -112,7 +112,8 @@ public class GameController : SystemBase
     }
 
     private Dictionary<(sfloat radius, UnityS.Physics.Material material), BlobAssetReference<UnityS.Physics.Collider>> ballColliders = new Dictionary<(sfloat radius, UnityS.Physics.Material material), BlobAssetReference<UnityS.Physics.Collider>>();
-    public void CreateBall(float3 position, sfloat radius, UnityS.Physics.Material material, PhysicsParams physicsParams)
+    
+    public void CreateBall(Color ballColor, float3 position, sfloat radius, UnityS.Physics.Material material, PhysicsParams physicsParams)
     {
         if (!ballColliders.TryGetValue((radius, material), out BlobAssetReference<UnityS.Physics.Collider> collider))
         {
@@ -132,7 +133,9 @@ public class GameController : SystemBase
         MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
         renderer.material = (ResourceManager.Instance.defaultMaterial);
         renderer.GetPropertyBlock(matPropBlock);
-        matPropBlock.SetColor("_Color", RandomColor());
+        if(ballColor == Color.black)
+            ballColor = RandomColor();
+        matPropBlock.SetColor("_Color", ballColor);
         renderer.SetPropertyBlock(matPropBlock);
 
         objects.Add(entity, obj);
@@ -230,9 +233,23 @@ public class GameController : SystemBase
 [UpdateBefore(typeof(BuildPhysicsWorld))]
 class PhysicsController : SystemBase
 {
+    public static PhysicsController Instance;
+
+    protected override void OnCreate()
+    {
+        base.OnCreate();
+        Instance = this;
+    }
+
     private int frame = 0;
 
-    private void ShootBall(sfloat mass, sfloat radius, float3 startingPos, float3 startingVelocity)
+    public void ShootBall(sfloat mass, sfloat radius, float3 startingPos, float3 startingVelocity)
+    {
+        Color ballColor = Color.black;
+        ShootBall(ballColor, mass, radius, startingPos, startingVelocity);
+    }
+    
+    public void ShootBall(Color ballColor, sfloat mass, sfloat radius, float3 startingPos, float3 startingVelocity)
     {
         UnityS.Physics.Material material = UnityS.Physics.Material.Default;
         material.Friction = (sfloat)0.25f;
@@ -244,7 +261,7 @@ class PhysicsController : SystemBase
         physicsParams.mass = mass;
         physicsParams.angularDamping = (sfloat)0.9f;
 
-        GameController.Instance.CreateBall(startingPos, radius, material, physicsParams);
+        GameController.Instance.CreateBall(ballColor, startingPos, radius, material, physicsParams);
     }
 
     private void ShootBox(sfloat mass, float3 size, float3 startingPos, float3 startingVelocity)
@@ -263,20 +280,20 @@ class PhysicsController : SystemBase
 
     protected override void OnUpdate()
     {
-        if (frame >= 60 && frame % 10 == 0 && frame < 500)
-        {
-            ShootBox((sfloat)0.25f, (sfloat)7.0f, new float3((sfloat)50.0f, (sfloat)20.0f, (sfloat)(-50.0f)), new float3((sfloat)(-100.0f), (sfloat)1.0f, (sfloat)100.0f));
-        }
-        if (frame >= 100 && frame % 30 == 0 && frame < 900)
-        {
-            ShootBall((sfloat)0.25f, (sfloat)5.0f, new float3((sfloat)0.0f, (sfloat)200.0f, (sfloat)(0.0f)), float3.zero);
-        }
-        if (frame == 720)
-        {
-            ShootBall((sfloat)20.0f, (sfloat)12.0f, new float3((sfloat)50.0f, (sfloat)20.0f, (sfloat)(-50.0f)), new float3((sfloat)(-100.0f), (sfloat)1.0f, (sfloat)100.0f));
-        }
+        // if (frame >= 60 && frame % 10 == 0 && frame < 500)
+        // {
+        //     ShootBox((sfloat)0.25f, (sfloat)7.0f, new float3((sfloat)50.0f, (sfloat)20.0f, (sfloat)(-50.0f)), new float3((sfloat)(-100.0f), (sfloat)1.0f, (sfloat)100.0f));
+        // }
+        // if (frame >= 100 && frame % 30 == 0 && frame < 900)
+        // {
+        //     ShootBall((sfloat)0.25f, (sfloat)5.0f, new float3((sfloat)0.0f, (sfloat)200.0f, (sfloat)(0.0f)), float3.zero);
+        // }
+        // if (frame == 720)
+        // {
+        //     ShootBall((sfloat)20.0f, (sfloat)12.0f, new float3((sfloat)50.0f, (sfloat)20.0f, (sfloat)(-50.0f)), new float3((sfloat)(-100.0f), (sfloat)1.0f, (sfloat)100.0f));
+        // }
 
-        ++frame;
+        // ++frame;
     }
 }
 

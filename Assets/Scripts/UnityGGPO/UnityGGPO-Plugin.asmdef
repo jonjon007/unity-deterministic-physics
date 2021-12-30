@@ -1,0 +1,14 @@
+{
+    "name": "UnityGGPO-Plugin",
+    "rootNamespace": "UnityGGPO",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
