@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Unity.Collections;
 using UnityGGPO;
+using UnityEngine;
 using System.Collections.Generic;
 
 namespace SharedGame {
@@ -25,6 +27,7 @@ namespace SharedGame {
             // Update player inputs
                 lastPlayerInputs.Clear();
                 lastPlayerInputs.AddRange(inputs);
+                UnityEngine.Debug.Log(String.Format("Last inputs are: p1 {0}, p2 {1}", inputs[0], inputs[1]));
         }
 
         public void OnTestSave() {

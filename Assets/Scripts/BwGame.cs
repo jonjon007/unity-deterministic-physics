@@ -211,7 +211,7 @@ namespace BallWar {
         public void ParseShipInputs(long  inputs, int i, out float heading, out float thrust, out int fire) {
             var ship = _ships[i];
 
-            GGPORunner.LogGame($"parsing ship {i} inputs: {inputs}.");
+            // GGPORunner.LogGame($"parsing ship {i} inputs: {inputs}.");
 
             if ((inputs & INPUT_ROTATE_RIGHT) != 0) {
                 heading = (ship.heading - ROTATE_INCREMENT) % 360;
@@ -249,7 +249,7 @@ namespace BallWar {
         public void MoveShip(int index, float heading, float thrust, int fire) {
             var ship = _ships[index];
 
-            GGPORunner.LogGame($"calculation of new ship coordinates: (thrust:{thrust} heading:{heading}).");
+            // GGPORunner.LogGame($"calculation of new ship coordinates: (thrust:{thrust} heading:{heading}).");
 
             ship.heading = heading;
 
@@ -285,11 +285,11 @@ namespace BallWar {
                     ship.velocity.y = (ship.velocity.y * SHIP_MAX_THRUST) / mag;
                 }
             }
-            GGPORunner.LogGame($"new ship velocity: (dx:{ship.velocity.x} dy:{ship.velocity.y}).");
+            // GGPORunner.LogGame($"new ship velocity: (dx:{ship.velocity.x} dy:{ship.velocity.y}).");
 
             ship.position.x += ship.velocity.x;
             ship.position.y += ship.velocity.y;
-            GGPORunner.LogGame($"new ship position: (dx:{ship.position.x} dy:{ship.position.y}).");
+            // GGPORunner.LogGame($"new ship position: (dx:{ship.position.x} dy:{ship.position.y}).");
 
             if (ship.position.x - ship.radius < _bounds.xMin ||
                 ship.position.x + ship.radius > _bounds.xMax) {
@@ -375,9 +375,13 @@ namespace BallWar {
         public long ReadInputs(int id, long lastInputs) {
             long input = 0;
 
-            if(UnityEngine.Input.GetKey("a")){
+            string shotKey = id == 0 ? "a" : "b";
+
+            if(UnityEngine.Input.GetKey(shotKey)){
+                Debug.Log(String.Format("LastInputs: {0}", lastInputs.ToString()));
                 input |= INPUT_SHOT;
-                if((lastInputs & INPUT_SHOT) == 0){
+                if((lastInputs & INPUT_SHOT) == 0
+                    && (lastInputs & INPUT_SHOT_DOWN) == 0){
                     input |= INPUT_SHOT_DOWN;
                 }
             }

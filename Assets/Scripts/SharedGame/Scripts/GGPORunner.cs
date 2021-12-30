@@ -377,6 +377,10 @@ namespace SharedGame {
      input = rand(); // test: use random inputs to demonstrate sync testing
 #endif
                     result = GGPO.Session.AddLocalInput(player.handle, input);
+                    // Update player inputs
+                    lastPlayerInputs[i] = input;
+                    LogGame(String.Format("Last inputs on frame {2} are: p1 {0}, p2 {1}",
+                        lastPlayerInputs[0], lastPlayerInputs[1], Game.Framenumber));
                 }
             }
 
@@ -389,9 +393,6 @@ namespace SharedGame {
                     // 1 frame using those inputs.
                     var inputs = GGPO.Session.SynchronizeInput(MAX_PLAYERS, out var disconnect_flags);
                     AdvanceFrame(inputs, disconnect_flags);
-                    // Update player inputs
-                    lastPlayerInputs.Clear();
-                    lastPlayerInputs.AddRange(inputs);
                 }
                 catch (Exception ex) {
                     LogGame("Error " + ex);
