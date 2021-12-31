@@ -6,6 +6,8 @@ using UnityS.Mathematics;
 using UnityS.Physics;
 using UnityS.Physics.Systems;
 using UnityS.Transforms;
+using Unity.Burst;
+using Unity.Jobs;
 
 public class GameController : SystemBase
 {
@@ -15,6 +17,10 @@ public class GameController : SystemBase
     private readonly Dictionary<Entity, GameObject> objects = new Dictionary<Entity, GameObject>(32);
 
     private MaterialPropertyBlock matPropBlock;
+
+    public void Create(){
+        OnCreate();
+    }
 
     protected override void OnCreate()
     {
@@ -91,6 +97,45 @@ public class GameController : SystemBase
                 obj.transform.localRotation = (Quaternion)r.Value;
             }
         }).WithoutBurst().Run();
+    }
+
+    public void TearDown(){
+        EntityCommandBufferSystem m_EntityCommandBufferSystem = World.GetOrCreateSystem<EntityCommandBufferSystem>();
+        EntityCommandBuffer commandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer();
+        var ecb = commandBuffer.AsParallelWriter();
+        Entities.ForEach((Entity entity, int entityInQueryIndex) =>
+        {
+            ecb.DestroyEntity(entityInQueryIndex, entity);
+        }).ScheduleParallel();
+        
+        // EntityCommandBufferSystem m_EntityCommandBufferSystem = World.GetOrCreateSystem<EntityCommandBufferSystem>();
+        // EntityCommandBuffer commandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer();
+        // var ecb = commandBuffer.AsParallelWriter();
+        // Entities.ForEach((ref Entity e, ref Translation t, ref Rotation r, ref PhysicsVelocity _vel) => {
+        //     ecb.DestroyEntity(e);
+        // }).ScheduleParallel();
+
+        m_EntityCommandBufferSystem.AddJobHandleForProducer(Dependency);
+
+        foreach(KeyValuePair<Entity, GameObject> kvp in objects){
+            GameObject obj = kvp.Value;
+            GameObject.Destroy(obj);
+        }
+        objects.Clear();
+        
+
+        // m_EntityCommandBufferSystem.AddJobHandleForProducer(job);
+        // Entities.ForEach((ref Entity e, ref Translation t, ref Rotation r, ref PhysicsVelocity _vel) =>
+        // {
+        //     // update object transforms, based on ECS data
+        //     if (objects.TryGetValue(e, out GameObject obj))
+        //     {
+        //         GameObject.Destroy(obj);
+        //     }
+        //     EntityManager.DestroyEntity(e);
+        //     // commandBuffer.DestroyEntity(e);
+        // }).WithoutBurst().Run();
+        // EntityManager.DestroyAndResetAllEntities();
     }
 
     private PCG rand = default;

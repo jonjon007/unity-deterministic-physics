@@ -374,6 +374,16 @@ namespace BallWar {
 
         public long ReadInputs(int id, long lastInputs) {
             long input = 0;
+            if(UnityEngine.Input.GetKey("c")){
+                GameController.Instance.TearDown();
+                // GameController.Instance.Create();
+            }
+
+            if(UnityEngine.Input.GetKey("d")){
+                // GameController.Instance.TearDown();
+                GameController.Instance.Create();
+            }
+
 
             string shotKey = id == 0 ? "a" : "b";
 
