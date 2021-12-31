@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharedGame;
+using System;
 using System.Diagnostics;
 using Unity.Collections;
 using UnityGGPO;
@@ -73,6 +74,9 @@ namespace SharedGame {
         }
 
         public void Shutdown() {
+            //Clean up game
+            Game.CleanUp();
+            //Clear buffer
             if (buffer.IsCreated) {
                 buffer.Dispose();
             }

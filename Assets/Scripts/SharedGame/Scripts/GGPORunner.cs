@@ -438,6 +438,8 @@ namespace SharedGame {
         }
 
         public void Shutdown() {
+            //Clean up game
+            Game.CleanUp();
             Exit();
             GGPO.SetLogDelegate(null);
         }

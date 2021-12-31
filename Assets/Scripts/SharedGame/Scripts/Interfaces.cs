@@ -24,6 +24,7 @@ namespace SharedGame {
         void LogInfo(string filename);
 
         void FreeBytes(NativeArray<byte> data);
+        void CleanUp();
     }
 
     public interface IGameRunner {

@@ -142,6 +142,11 @@ namespace BallWar {
             }
         }
 
+        /* Gets called on shutdown */
+        public void CleanUp(){
+            GameController.Instance.TearDown();
+        }
+
         public NativeArray<byte> ToBytes() {
             using (var memoryStream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(memoryStream)) {
@@ -358,8 +363,11 @@ namespace BallWar {
 
                 if ((disconnect_flags & (1 << i)) != 0) {
                     GetShipAI(i, out heading, out thrust, out fire);
+                    GameController.Instance.TearDown();
                 }
                 else {
+                    if(!GameController.Instance.IsPopulated())
+                        GameController.Instance.Create();
                     ParseBallInputs(inputs[i], i, out shot);
                     ParseShipInputs(inputs[i], i, out heading, out thrust, out fire);
                 }

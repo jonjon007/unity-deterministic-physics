@@ -18,20 +18,20 @@ public class GameController : SystemBase
 
     private MaterialPropertyBlock matPropBlock;
 
-    public void Create(){
-        OnCreate();
-    }
-
-    protected override void OnCreate()
-    {
+    protected override void OnCreate(){
         base.OnCreate();
         Instance = this;
+
         UnityEngine.Physics.autoSimulation = false;
 
         matPropBlock = new MaterialPropertyBlock();
 
         // setup physics parameters
         World.GetOrCreateSystem<FixedStepSimulationSystemGroup>().Timestep = (float)(sfloat.One / (sfloat)60.0f);
+    }
+
+    public void Create()
+    {  
         Entity physicsStep = EntityManager.CreateEntity(typeof(PhysicsStep));
         PhysicsStep physicsStepParams = PhysicsStep.Default;
         physicsStepParams.SolverStabilizationHeuristicSettings = new Solver.StabilizationHeuristicSettings
@@ -99,7 +99,14 @@ public class GameController : SystemBase
         }).WithoutBurst().Run();
     }
 
+    public bool IsPopulated(){
+        return objects.Count > 0;
+    }
+
     public void TearDown(){
+        // We have nothing to remove if we don't have any objects
+        if(objects.Count < 1){ return; }
+
         EntityCommandBufferSystem m_EntityCommandBufferSystem = World.GetOrCreateSystem<EntityCommandBufferSystem>();
         EntityCommandBuffer commandBuffer = m_EntityCommandBufferSystem.CreateCommandBuffer();
         var ecb = commandBuffer.AsParallelWriter();
